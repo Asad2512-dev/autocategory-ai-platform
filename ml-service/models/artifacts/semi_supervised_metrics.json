@@ -1,0 +1,18 @@
+{
+  "confidence_threshold": 0.92,
+  "labeled_only_size": 5738,
+  "unlabeled_pool_size": 3090,
+  "pseudo_accepted": 2846,
+  "metrics_before_pseudo": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0
+  },
+  "metrics_after_pseudo": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0
+  }
+}

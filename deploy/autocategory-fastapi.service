@@ -1,0 +1,23 @@
+# systemd unit for the ML service extracted from repo folder ml-service/ to /opt/autocategory-fastapi
+# Install: sudo cp deploy/autocategory-fastapi.service /etc/systemd/system/autocategory-fastapi.service
+
+[Unit]
+Description=AutoCategory AI FastAPI (uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+; After extracting the app, run: sudo chown -R www-data:www-data /opt/autocategory-fastapi
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/autocategory-fastapi
+EnvironmentFile=/opt/autocategory-fastapi/.env
+ExecStart=/opt/autocategory-fastapi/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8001 --workers 1
+Restart=always
+RestartSec=3
+
+# KVM1-friendly: one worker keeps memory predictable.
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target

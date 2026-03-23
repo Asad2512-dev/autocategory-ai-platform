@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-03-22T20:21:13.954784+00:00",
+  "fastapi_app_version": "1.0.0",
+  "best_classifier": "LogisticRegression",
+  "best_params": {
+    "model__C": 5.0,
+    "model__class_weight": "balanced",
+    "model__max_iter": 1000,
+    "tfidf__min_df": 1,
+    "tfidf__ngram_range": [
+      1,
+      1
+    ],
+    "tfidf__sublinear_tf": true
+  },
+  "num_labels": 10,
+  "labels": [
+    "Automotive",
+    "Beauty & Personal Care",
+    "Books",
+    "Electronics",
+    "Fashion",
+    "Grocery & Food",
+    "Health & Wellness",
+    "Home & Furniture",
+    "Sports & Outdoors",
+    "Toys & Games"
+  ],
+  "dataset_files": [
+    "final_merged_cleaned_dataset.csv"
+  ],
+  "cleaned_row_count": 11035,
+  "test_metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0
+  }
+}

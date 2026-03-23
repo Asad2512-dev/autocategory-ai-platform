@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Category extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'status',
+    ];
+
+    public function predictedProducts(): HasMany
+    {
+        return $this->hasMany(Product::class, 'predicted_category_id');
+    }
+
+    public function finalProducts(): HasMany
+    {
+        return $this->hasMany(Product::class, 'final_category_id');
+    }
+}

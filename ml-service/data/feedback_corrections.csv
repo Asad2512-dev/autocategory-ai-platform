@@ -1,0 +1,3 @@
+timestamp,title,description,predicted_category,corrected_category,confidence,low_confidence,review_needed,flagged_for_retraining,prediction_source
+2026-03-20T18:11:07.833869+00:00,straight fit jeans,best jeans in straight fit for boys and girls,Fashion,Fashion,0.6482,True,True,True,model
+2026-03-21T21:15:49.852455+00:00,Sports Bra X,Women breathable gym bra for workouts,Fashion,Electronics,0.9373,False,False,False,model

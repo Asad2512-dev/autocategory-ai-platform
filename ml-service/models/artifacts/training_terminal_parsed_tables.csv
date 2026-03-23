@@ -1,0 +1,50 @@
+section,run_note,col1,col2,col3,col4,col5,col6,col7,col8
+dataset,run_1_identical_to_run_2_for_tables,metric,value,,,,,
+dataset,run_1_identical_to_run_2_for_tables,dataset_file,final_merged_cleaned_dataset.csv,,,,,
+dataset,run_1_identical_to_run_2_for_tables,rows_raw,11035,,,,,
+dataset,run_1_identical_to_run_2_for_tables,rows_cleaned,11035,,,,,
+dataset,run_1_identical_to_run_2_for_tables,train_size,8828,,,,,
+dataset,run_1_identical_to_run_2_for_tables,test_size,2207,,,,,
+dataset,run_1_identical_to_run_2_for_tables,num_classes,10,,,,,
+
+baseline_comparison,run_1_identical_to_run_2_for_tables,model_name,ngram_range,train_accuracy,test_accuracy,weighted_precision,weighted_recall,weighted_f1
+baseline_comparison,run_1_identical_to_run_2_for_tables,LogisticRegression,"(1, 1)",0.9995,1.0,1.0,1.0,1.0
+baseline_comparison,run_1_identical_to_run_2_for_tables,LogisticRegression,"(1, 2)",0.9995,1.0,1.0,1.0,1.0
+baseline_comparison,run_1_identical_to_run_2_for_tables,LinearSVC,"(1, 1)",1.0,1.0,1.0,1.0,1.0
+baseline_comparison,run_1_identical_to_run_2_for_tables,LinearSVC,"(1, 2)",1.0,1.0,1.0,1.0,1.0
+baseline_comparison,run_1_identical_to_run_2_for_tables,MultinomialNB,"(1, 1)",0.9995,0.9995,0.9995,0.9995,0.9995
+baseline_comparison,run_1_identical_to_run_2_for_tables,MultinomialNB,"(1, 2)",0.9995,0.9995,0.9995,0.9995,0.9995
+baseline_comparison,run_1_identical_to_run_2_for_tables,RandomForest,"(1, 1)",1.0,0.9955,0.9955,0.9955,0.9955
+baseline_comparison,run_1_identical_to_run_2_for_tables,RandomForest,"(1, 2)",1.0,0.9946,0.9946,0.9946,0.9946
+
+tuning_best_params,run_1_identical_to_run_2_for_tables,model_name,best_params_json,best_cv_f1_weighted,,,,
+tuning_best_params,run_1_identical_to_run_2_for_tables,LogisticRegression,"{'model__C': 5.0, 'model__class_weight': 'balanced', 'model__max_iter': 1000, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}",0.9993,,,,
+tuning_best_params,run_1_identical_to_run_2_for_tables,MultinomialNB,"{'model__alpha': 0.1, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 2), 'tfidf__sublinear_tf': True}",0.9992,,,,
+tuning_best_params,run_1_identical_to_run_2_for_tables,LinearSVC,"{'model__C': 0.5, 'model__class_weight': None, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}",0.9994,,,,
+tuning_best_params,run_1_identical_to_run_2_for_tables,RandomForest,"{'model__max_depth': 40, 'model__min_samples_leaf': 1, 'model__n_estimators': 200, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}",0.9943,,,,
+
+tuned_summary,run_1_identical_to_run_2_for_tables,model_name,ngram_range,train_accuracy,test_accuracy,weighted_precision,weighted_recall,weighted_f1
+tuned_summary,run_1_identical_to_run_2_for_tables,LogisticRegression,"(1, 1)",1.0,1.0,1.0,1.0,1.0
+tuned_summary,run_1_identical_to_run_2_for_tables,MultinomialNB,"(1, 2)",0.9998,1.0,1.0,1.0,1.0
+tuned_summary,run_1_identical_to_run_2_for_tables,LinearSVC,"(1, 1)",1.0,1.0,1.0,1.0,1.0
+tuned_summary,run_1_identical_to_run_2_for_tables,RandomForest,"(1, 1)",0.9991,0.9955,0.9955,0.9955,0.9955
+
+best_model,run_1_identical_to_run_2_for_tables,model_name,LogisticRegression,,,,,
+best_model,run_1_identical_to_run_2_for_tables,supports_predict_proba,True,,,,,
+best_model,run_1_identical_to_run_2_for_tables,supports_decision_function,True,,,,,
+
+per_class_f1,run_1_identical_to_run_2_for_tables,category,f1,support,,,,
+per_class_f1,run_1_identical_to_run_2_for_tables,Automotive,1.0,220
+per_class_f1,run_1_identical_to_run_2_for_tables,Beauty & Personal Care,1.0,221
+per_class_f1,run_1_identical_to_run_2_for_tables,Books,1.0,221
+per_class_f1,run_1_identical_to_run_2_for_tables,Electronics,1.0,221
+per_class_f1,run_1_identical_to_run_2_for_tables,Fashion,1.0,221
+per_class_f1,run_1_identical_to_run_2_for_tables,Grocery & Food,1.0,220
+per_class_f1,run_1_identical_to_run_2_for_tables,Health & Wellness,1.0,220
+per_class_f1,run_1_identical_to_run_2_for_tables,Home & Furniture,1.0,221
+per_class_f1,run_1_identical_to_run_2_for_tables,Sports & Outdoors,1.0,221
+per_class_f1,run_1_identical_to_run_2_for_tables,Toys & Games,1.0,221
+
+semi_supervised_run2_only,run_2,confidence_threshold,labeled_only_size,unlabeled_pool_size,pseudo_accepted,before_accuracy,before_precision,before_recall,before_f1
+semi_supervised_run2_only,run_2,0.92,5738,3090,2846,1.0,1.0,1.0,1.0
+semi_supervised_run2_only,run_2,after_accuracy,1.0,after_precision,1.0,after_recall,1.0,after_f1,1.0

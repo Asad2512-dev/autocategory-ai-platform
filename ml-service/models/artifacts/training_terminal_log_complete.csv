@@ -1,0 +1,366 @@
+source_line,run_index,text
+7,1,(.venv) (base) oakmate@Muhammads-MacBook-Air-2 ml-service % python train_model.py \
+8,1,  --data data/final_merged_cleaned_dataset.csv \
+9,1,  --model-dir model \
+10,1,  --report-dir models/artifacts
+11,1,
+12,1,=== Dataset Loading ===
+13,1,- Loaded /Applications/MAMP/htdocs/product-categorization-backend/ml-service/data/final_merged_cleaned_dataset.csv: 11035 rows
+14,1,Total rows after merge: 11035
+15,1,
+16,1,=== Dataset Quality Snapshot ===
+17,1,Rows before cleaning: 11035
+18,1,Rows after cleaning:  11035
+19,1,Unique categories:    10
+20,1,
+21,1,=== Category Distribution (After Normalization) ===
+22,1,- Automotive: 1100
+23,1,- Beauty & Personal Care: 1105
+24,1,- Books: 1105
+25,1,- Electronics: 1105
+26,1,- Fashion: 1105
+27,1,- Grocery & Food: 1100
+28,1,- Health & Wellness: 1100
+29,1,- Home & Furniture: 1105
+30,1,- Sports & Outdoors: 1105
+31,1,- Toys & Games: 1105
+32,1,
+33,1,Example cleaned rows:
+34,1,              title                                      description    category                      source_file
+35,1,apple iphone 15 pro latest smartphone with a17 chip and great camera Electronics final_merged_cleaned_dataset.csv
+36,1, samsung galaxy s24       android flagship phone with amoled display Electronics final_merged_cleaned_dataset.csv
+37,1,        dell xps 13    lightweight ultrabook laptop for productivity Electronics final_merged_cleaned_dataset.csv
+38,1,    sony wh 1000xm5    noise cancelling wireless over ear headphones Electronics final_merged_cleaned_dataset.csv
+39,1,      canon eos m50      mirrorless camera for photography and video Electronics final_merged_cleaned_dataset.csv
+40,1,
+41,1,=== Train/Test Split ===
+42,1,Train size: 8828
+43,1,Test size:  2207
+44,1,
+45,1,Train class distribution:
+46,1,Automotive                880
+47,1,Beauty & Personal Care    884
+48,1,Books                     884
+49,1,Electronics               884
+50,1,Fashion                   884
+51,1,Grocery & Food            880
+52,1,Health & Wellness         880
+53,1,Home & Furniture          884
+54,1,Sports & Outdoors         884
+55,1,Toys & Games              884
+56,1,
+57,1,Test class distribution:
+58,1,Automotive                220
+59,1,Beauty & Personal Care    221
+60,1,Books                     221
+61,1,Electronics               221
+62,1,Fashion                   221
+63,1,Grocery & Food            220
+64,1,Health & Wellness         220
+65,1,Home & Furniture          221
+66,1,Sports & Outdoors         221
+67,1,Toys & Games              221
+68,1,
+69,1,=== Baseline Model Comparison (Sorted by weighted_f1) ===
+70,1,        model_name ngram_range  train_accuracy  test_accuracy  weighted_precision  weighted_recall  weighted_f1
+71,1,"LogisticRegression      (1, 1)          0.9995         1.0000              1.0000           1.0000       1.0000"
+72,1,"LogisticRegression      (1, 2)          0.9995         1.0000              1.0000           1.0000       1.0000"
+73,1,"         LinearSVC      (1, 1)          1.0000         1.0000              1.0000           1.0000       1.0000"
+74,1,"         LinearSVC      (1, 2)          1.0000         1.0000              1.0000           1.0000       1.0000"
+75,1,"     MultinomialNB      (1, 1)          0.9995         0.9995              0.9995           0.9995       0.9995"
+76,1,"     MultinomialNB      (1, 2)          0.9995         0.9995              0.9995           0.9995       0.9995"
+77,1,"      RandomForest      (1, 1)          1.0000         0.9955              0.9955           0.9955       0.9955"
+78,1,"      RandomForest      (1, 2)          1.0000         0.9946              0.9946           0.9946       0.9946"
+79,1,
+80,1,=== Tuning LogisticRegression ===
+81,1,"Best params: {'model__C': 5.0, 'model__class_weight': 'balanced', 'model__max_iter': 1000, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}"
+82,1,Best CV weighted F1: 0.9993
+83,1,
+84,1,=== Tuning MultinomialNB ===
+85,1,"Best params: {'model__alpha': 0.1, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 2), 'tfidf__sublinear_tf': True}"
+86,1,Best CV weighted F1: 0.9992
+87,1,
+88,1,=== Tuning LinearSVC ===
+89,1,"Best params: {'model__C': 0.5, 'model__class_weight': None, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}"
+90,1,Best CV weighted F1: 0.9994
+91,1,
+92,1,=== Tuning RandomForest ===
+93,1,"Best params: {'model__max_depth': 40, 'model__min_samples_leaf': 1, 'model__n_estimators': 200, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}"
+94,1,Best CV weighted F1: 0.9943
+95,1,
+96,1,=== Tuned Model Summary (Sorted by weighted_f1) ===
+97,1,        model_name ngram_range  train_accuracy  test_accuracy  weighted_precision  weighted_recall  weighted_f1
+98,1,"LogisticRegression      (1, 1)          1.0000         1.0000              1.0000           1.0000       1.0000"
+99,1,"     MultinomialNB      (1, 2)          0.9998         1.0000              1.0000           1.0000       1.0000"
+100,1,"         LinearSVC      (1, 1)          1.0000         1.0000              1.0000           1.0000       1.0000"
+101,1,"      RandomForest      (1, 1)          0.9991         0.9955              0.9955           0.9955       0.9955"
+102,1,
+103,1,=== Best Tuned Model ===
+104,1,Model: LogisticRegression
+105,1,"Params: {'model__C': 5.0, 'model__class_weight': 'balanced', 'model__max_iter': 1000, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}"
+106,1,Supports predict_proba: True
+107,1,Supports decision_function: True
+108,1,
+109,1,=== Classification Report (Best Model) ===
+110,1,                        precision    recall  f1-score   support
+111,1,
+112,1,            Automotive       1.00      1.00      1.00       220
+113,1,Beauty & Personal Care       1.00      1.00      1.00       221
+114,1,                 Books       1.00      1.00      1.00       221
+115,1,           Electronics       1.00      1.00      1.00       221
+116,1,               Fashion       1.00      1.00      1.00       221
+117,1,        Grocery & Food       1.00      1.00      1.00       220
+118,1,     Health & Wellness       1.00      1.00      1.00       220
+119,1,      Home & Furniture       1.00      1.00      1.00       221
+120,1,     Sports & Outdoors       1.00      1.00      1.00       221
+121,1,          Toys & Games       1.00      1.00      1.00       221
+122,1,
+123,1,              accuracy                           1.00      2207
+124,1,             macro avg       1.00      1.00      1.00      2207
+125,1,          weighted avg       1.00      1.00      1.00      2207
+126,1,
+127,1,
+128,1,=== Per-Class F1 ===
+129,1,              category     f1  support
+130,1,            Automotive 1.0000      220
+131,1,Beauty & Personal Care 1.0000      221
+132,1,                 Books 1.0000      221
+133,1,           Electronics 1.0000      221
+134,1,               Fashion 1.0000      221
+135,1,        Grocery & Food 1.0000      220
+136,1,     Health & Wellness 1.0000      220
+137,1,      Home & Furniture 1.0000      221
+138,1,     Sports & Outdoors 1.0000      221
+139,1,          Toys & Games 1.0000      221
+140,1,
+141,1,Weakest categories:
+142,1,"- Automotive: F1=1.0000, support=220"
+143,1,"- Beauty & Personal Care: F1=1.0000, support=221"
+144,1,"- Books: F1=1.0000, support=221"
+145,1,
+146,1,=== Confusion Matrix (Best Model) ===
+147,1,"Rows=true, Columns=predicted"
+148,1,                        Automotive  Beauty & Personal Care  Books  Electronics  Fashion  Grocery & Food  Health & Wellness  Home & Furniture  Sports & Outdoors  Toys & Games
+149,1,Automotive                     220                       0      0            0        0               0                  0                 0                  0             0
+150,1,Beauty & Personal Care           0                     221      0            0        0               0                  0                 0                  0             0
+151,1,Books                            0                       0    221            0        0               0                  0                 0                  0             0
+152,1,Electronics                      0                       0      0          221        0               0                  0                 0                  0             0
+153,1,Fashion                          0                       0      0            0      221               0                  0                 0                  0             0
+154,1,Grocery & Food                   0                       0      0            0        0             220                  0                 0                  0             0
+155,1,Health & Wellness                0                       0      0            0        0               0                220                 0                  0             0
+156,1,Home & Furniture                 0                       0      0            0        0               0                  0               221                  0             0
+157,1,Sports & Outdoors                0                       0      0            0        0               0                  0                 0                221             0
+158,1,Toys & Games                     0                       0      0            0        0               0                  0                 0                  0           221
+159,1,
+160,1,=== Most Confused Category Pairs ===
+161,1,No confused pairs found.
+162,1,
+163,1,=== Top 20 Misclassified Examples ===
+164,1,No misclassified examples in test split.
+165,1,
+166,1,=== Targeted Mistake Checks ===
+167,1,No misclassified examples found.
+168,1,
+169,1,Saved artifacts (best model):
+170,1,- /Applications/MAMP/htdocs/product-categorization-backend/ml-service/model/model.pkl
+171,1,- /Applications/MAMP/htdocs/product-categorization-backend/ml-service/model/vectorizer.pkl
+172,1,- /Applications/MAMP/htdocs/product-categorization-backend/ml-service/model/label_encoder.pkl
+173,1,
+174,1,Saved model comparison: /Applications/MAMP/htdocs/product-categorization-backend/ml-service/models/artifacts/model_comparison.csv
+175,1,Saved metrics bundle: /Applications/MAMP/htdocs/product-categorization-backend/ml-service/models/artifacts/metrics.json
+176,1,Saved model_info.json: /Applications/MAMP/htdocs/product-categorization-backend/ml-service/model/model_info.json
+177,1,Saved training summary: /Applications/MAMP/htdocs/product-categorization-backend/ml-service/model/training_summary.json
+178,2,(.venv) (base) oakmate@Muhammads-MacBook-Air-2 ml-service % python train_model.py \
+179,2,  --data data/final_merged_cleaned_dataset.csv \
+180,2,  --model-dir model \
+181,2,  --report-dir models/artifacts \
+182,2,  --semi-supervised \
+183,2,  --pseudo-confidence 0.92
+184,2,
+185,2,=== Dataset Loading ===
+186,2,- Loaded /Applications/MAMP/htdocs/product-categorization-backend/ml-service/data/final_merged_cleaned_dataset.csv: 11035 rows
+187,2,Total rows after merge: 11035
+188,2,
+189,2,=== Dataset Quality Snapshot ===
+190,2,Rows before cleaning: 11035
+191,2,Rows after cleaning:  11035
+192,2,Unique categories:    10
+193,2,
+194,2,=== Category Distribution (After Normalization) ===
+195,2,- Automotive: 1100
+196,2,- Beauty & Personal Care: 1105
+197,2,- Books: 1105
+198,2,- Electronics: 1105
+199,2,- Fashion: 1105
+200,2,- Grocery & Food: 1100
+201,2,- Health & Wellness: 1100
+202,2,- Home & Furniture: 1105
+203,2,- Sports & Outdoors: 1105
+204,2,- Toys & Games: 1105
+205,2,
+206,2,Example cleaned rows:
+207,2,              title                                      description    category                      source_file
+208,2,apple iphone 15 pro latest smartphone with a17 chip and great camera Electronics final_merged_cleaned_dataset.csv
+209,2, samsung galaxy s24       android flagship phone with amoled display Electronics final_merged_cleaned_dataset.csv
+210,2,        dell xps 13    lightweight ultrabook laptop for productivity Electronics final_merged_cleaned_dataset.csv
+211,2,    sony wh 1000xm5    noise cancelling wireless over ear headphones Electronics final_merged_cleaned_dataset.csv
+212,2,      canon eos m50      mirrorless camera for photography and video Electronics final_merged_cleaned_dataset.csv
+213,2,
+214,2,=== Train/Test Split ===
+215,2,Train size: 8828
+216,2,Test size:  2207
+217,2,
+218,2,Train class distribution:
+219,2,Automotive                880
+220,2,Beauty & Personal Care    884
+221,2,Books                     884
+222,2,Electronics               884
+223,2,Fashion                   884
+224,2,Grocery & Food            880
+225,2,Health & Wellness         880
+226,2,Home & Furniture          884
+227,2,Sports & Outdoors         884
+228,2,Toys & Games              884
+229,2,
+230,2,Test class distribution:
+231,2,Automotive                220
+232,2,Beauty & Personal Care    221
+233,2,Books                     221
+234,2,Electronics               221
+235,2,Fashion                   221
+236,2,Grocery & Food            220
+237,2,Health & Wellness         220
+238,2,Home & Furniture          221
+239,2,Sports & Outdoors         221
+240,2,Toys & Games              221
+241,2,
+242,2,=== Baseline Model Comparison (Sorted by weighted_f1) ===
+243,2,        model_name ngram_range  train_accuracy  test_accuracy  weighted_precision  weighted_recall  weighted_f1
+244,2,"LogisticRegression      (1, 1)          0.9995         1.0000              1.0000           1.0000       1.0000"
+245,2,"LogisticRegression      (1, 2)          0.9995         1.0000              1.0000           1.0000       1.0000"
+246,2,"         LinearSVC      (1, 1)          1.0000         1.0000              1.0000           1.0000       1.0000"
+247,2,"         LinearSVC      (1, 2)          1.0000         1.0000              1.0000           1.0000       1.0000"
+248,2,"     MultinomialNB      (1, 1)          0.9995         0.9995              0.9995           0.9995       0.9995"
+249,2,"     MultinomialNB      (1, 2)          0.9995         0.9995              0.9995           0.9995       0.9995"
+250,2,"      RandomForest      (1, 1)          1.0000         0.9955              0.9955           0.9955       0.9955"
+251,2,"      RandomForest      (1, 2)          1.0000         0.9946              0.9946           0.9946       0.9946"
+252,2,
+253,2,=== Tuning LogisticRegression ===
+254,2,"Best params: {'model__C': 5.0, 'model__class_weight': 'balanced', 'model__max_iter': 1000, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}"
+255,2,Best CV weighted F1: 0.9993
+256,2,
+257,2,=== Tuning MultinomialNB ===
+258,2,"Best params: {'model__alpha': 0.1, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 2), 'tfidf__sublinear_tf': True}"
+259,2,Best CV weighted F1: 0.9992
+260,2,
+261,2,=== Tuning LinearSVC ===
+262,2,"Best params: {'model__C': 0.5, 'model__class_weight': None, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}"
+263,2,Best CV weighted F1: 0.9994
+264,2,
+265,2,=== Tuning RandomForest ===
+266,2,"Best params: {'model__max_depth': 40, 'model__min_samples_leaf': 1, 'model__n_estimators': 200, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}"
+267,2,Best CV weighted F1: 0.9943
+268,2,
+269,2,=== Tuned Model Summary (Sorted by weighted_f1) ===
+270,2,        model_name ngram_range  train_accuracy  test_accuracy  weighted_precision  weighted_recall  weighted_f1
+271,2,"LogisticRegression      (1, 1)          1.0000         1.0000              1.0000           1.0000       1.0000"
+272,2,"     MultinomialNB      (1, 2)          0.9998         1.0000              1.0000           1.0000       1.0000"
+273,2,"         LinearSVC      (1, 1)          1.0000         1.0000              1.0000           1.0000       1.0000"
+274,2,"      RandomForest      (1, 1)          0.9991         0.9955              0.9955           0.9955       0.9955"
+275,2,
+276,2,=== Best Tuned Model ===
+277,2,Model: LogisticRegression
+278,2,"Params: {'model__C': 5.0, 'model__class_weight': 'balanced', 'model__max_iter': 1000, 'tfidf__min_df': 1, 'tfidf__ngram_range': (1, 1), 'tfidf__sublinear_tf': True}"
+279,2,Supports predict_proba: True
+280,2,Supports decision_function: True
+281,2,
+282,2,=== Classification Report (Best Model) ===
+283,2,                        precision    recall  f1-score   support
+284,2,
+285,2,            Automotive       1.00      1.00      1.00       220
+286,2,Beauty & Personal Care       1.00      1.00      1.00       221
+287,2,                 Books       1.00      1.00      1.00       221
+288,2,           Electronics       1.00      1.00      1.00       221
+289,2,               Fashion       1.00      1.00      1.00       221
+290,2,        Grocery & Food       1.00      1.00      1.00       220
+291,2,     Health & Wellness       1.00      1.00      1.00       220
+292,2,      Home & Furniture       1.00      1.00      1.00       221
+293,2,     Sports & Outdoors       1.00      1.00      1.00       221
+294,2,          Toys & Games       1.00      1.00      1.00       221
+295,2,
+296,2,              accuracy                           1.00      2207
+297,2,             macro avg       1.00      1.00      1.00      2207
+298,2,          weighted avg       1.00      1.00      1.00      2207
+299,2,
+300,2,
+301,2,=== Per-Class F1 ===
+302,2,              category     f1  support
+303,2,            Automotive 1.0000      220
+304,2,Beauty & Personal Care 1.0000      221
+305,2,                 Books 1.0000      221
+306,2,           Electronics 1.0000      221
+307,2,               Fashion 1.0000      221
+308,2,        Grocery & Food 1.0000      220
+309,2,     Health & Wellness 1.0000      220
+310,2,      Home & Furniture 1.0000      221
+311,2,     Sports & Outdoors 1.0000      221
+312,2,          Toys & Games 1.0000      221
+313,2,
+314,2,Weakest categories:
+315,2,"- Automotive: F1=1.0000, support=220"
+316,2,"- Beauty & Personal Care: F1=1.0000, support=221"
+317,2,"- Books: F1=1.0000, support=221"
+318,2,
+319,2,=== Confusion Matrix (Best Model) ===
+320,2,"Rows=true, Columns=predicted"
+321,2,                        Automotive  Beauty & Personal Care  Books  Electronics  Fashion  Grocery & Food  Health & Wellness  Home & Furniture  Sports & Outdoors  Toys & Games
+322,2,Automotive                     220                       0      0            0        0               0                  0                 0                  0             0
+323,2,Beauty & Personal Care           0                     221      0            0        0               0                  0                 0                  0             0
+324,2,Books                            0                       0    221            0        0               0                  0                 0                  0             0
+325,2,Electronics                      0                       0      0          221        0               0                  0                 0                  0             0
+326,2,Fashion                          0                       0      0            0      221               0                  0                 0                  0             0
+327,2,Grocery & Food                   0                       0      0            0        0             220                  0                 0                  0             0
+328,2,Health & Wellness                0                       0      0            0        0               0                220                 0                  0             0
+329,2,Home & Furniture                 0                       0      0            0        0               0                  0               221                  0             0
+330,2,Sports & Outdoors                0                       0      0            0        0               0                  0                 0                221             0
+331,2,Toys & Games                     0                       0      0            0        0               0                  0                 0                  0           221
+332,2,
+333,2,=== Most Confused Category Pairs ===
+334,2,No confused pairs found.
+335,2,
+336,2,=== Top 20 Misclassified Examples ===
+337,2,No misclassified examples in test split.
+338,2,
+339,2,=== Targeted Mistake Checks ===
+340,2,No misclassified examples found.
+341,2,
+342,2,Saved artifacts (best model):
+343,2,- /Applications/MAMP/htdocs/product-categorization-backend/ml-service/model/model.pkl
+344,2,- /Applications/MAMP/htdocs/product-categorization-backend/ml-service/model/vectorizer.pkl
+345,2,- /Applications/MAMP/htdocs/product-categorization-backend/ml-service/model/label_encoder.pkl
+346,2,
+347,2,Saved model comparison: /Applications/MAMP/htdocs/product-categorization-backend/ml-service/models/artifacts/model_comparison.csv
+348,2,Saved metrics bundle: /Applications/MAMP/htdocs/product-categorization-backend/ml-service/models/artifacts/metrics.json
+349,2,Saved model_info.json: /Applications/MAMP/htdocs/product-categorization-backend/ml-service/model/model_info.json
+350,2,Saved training summary: /Applications/MAMP/htdocs/product-categorization-backend/ml-service/model/training_summary.json
+351,2,
+352,2,Semi-supervised benchmark written to: /Applications/MAMP/htdocs/product-categorization-backend/ml-service/models/artifacts/semi_supervised_metrics.json
+353,2,{
+354,2,"  ""confidence_threshold"": 0.92,"
+355,2,"  ""labeled_only_size"": 5738,"
+356,2,"  ""unlabeled_pool_size"": 3090,"
+357,2,"  ""pseudo_accepted"": 2846,"
+358,2,"  ""metrics_before_pseudo"": {"
+359,2,"    ""accuracy"": 1.0,"
+360,2,"    ""precision"": 1.0,"
+361,2,"    ""recall"": 1.0,"
+362,2,"    ""f1_score"": 1.0"
+363,2,"  },"
+364,2,"  ""metrics_after_pseudo"": {"
+365,2,"    ""accuracy"": 1.0,"
+366,2,"    ""precision"": 1.0,"
+367,2,"    ""recall"": 1.0,"
+368,2,"    ""f1_score"": 1.0"
+369,2,  }
+370,2,}
+371,2,(.venv) (base) oakmate@Muhammads-MacBook-Air-2 ml-service %

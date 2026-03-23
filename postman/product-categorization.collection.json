@@ -1,0 +1,549 @@
+{
+  "info": {
+    "name": "AutoCategory AI",
+    "_postman_id": "6a1fd7ba-ae34-4ae9-8fd8-1d5ff0d9d201",
+    "description": "AutoCategory AI — Laravel 11 (web + API) + optional FastAPI (internal).\n\n**Production:** Environment **AutoCategory AI — Production**. `base_url` = public site (HTTPS, no `/api`). JSON API = `{{base_url}}/api/...`.\n\n**Web:** **Web (public)** folder — landing page at `/`, Laravel health at `/up`.\n\n**Auth:** **Login** / **Register** save `auth_token`. **Login (Admin)** sets `admin_token`.\n\n**ML (FastAPI):** `ml_base_url` is usually `http://127.0.0.1:8001` (VPS localhost or SSH tunnel). `/predict` returns `prediction_source`: `model` | `keyword_fallback` | `gemini_fallback`. `/health` includes `gemini_enabled` and `gemini_force_verify`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Sanctum JSON API. **Login** / **Register** save `auth_token` automatically.",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let payload = {};",
+                  "try { payload = pm.response.json(); } catch (e) {}",
+                  "const token = payload?.data?.token || payload?.token || '';",
+                  "if (token) {",
+                  "  pm.environment.set('auth_token', token);",
+                  "  if (payload?.data?.user?.role === 'admin') {",
+                  "    pm.environment.set('admin_token', token);",
+                  "  }",
+                  "}",
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\"\n}"
+            },
+            "url": "{{base_url}}/api/login",
+            "description": "Login as regular user. Saves **auth_token** to the active environment.\nIf the user role is **admin**, also saves **admin_token**.\n\nStatus codes: 200, 422"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "POST", "header": [], "url": "{{base_url}}/api/login" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login successful.\",\n  \"data\": {\n    \"token\": \"2|exampletoken\",\n    \"user\": {\n      \"id\": 2,\n      \"name\": \"Student User\",\n      \"email\": \"student@example.com\",\n      \"role\": \"user\",\n      \"status\": \"active\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  let payload = {};",
+                  "  try { payload = pm.response.json(); } catch (e) {}",
+                  "  const token = payload?.data?.token || payload?.token || '';",
+                  "  if (token) pm.environment.set('auth_token', token);",
+                  "}",
+                  "pm.test('Status is 201 when successful', function () { pm.expect([201,422]).to.include(pm.response.code); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Student User\",\n  \"email\": \"{{user_email}}\",\n  \"password\": \"{{user_password}}\",\n  \"password_confirmation\": \"{{user_password}}\"\n}"
+            },
+            "url": "{{base_url}}/api/register",
+            "description": "Create user account. On **201**, saves **auth_token** if the API returns a token.\n\nStatus codes: 201, 422"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": { "method": "POST", "url": "{{base_url}}/api/register" },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Registration successful.\",\n  \"data\": {\n    \"token\": \"1|exampletoken\",\n    \"user\": {\n      \"id\": 2,\n      \"name\": \"Student User\",\n      \"email\": \"student@example.com\",\n      \"role\": \"user\",\n      \"status\": \"active\"\n    }\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "let payload = {};",
+                  "try { payload = pm.response.json(); } catch (e) {}",
+                  "const token = payload?.data?.token || payload?.token || '';",
+                  "if (token) {",
+                  "  pm.environment.set('auth_token', token);",
+                  "  pm.environment.set('admin_token', token);",
+                  "}",
+                  "pm.test('Status is 200', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            },
+            "url": "{{base_url}}/api/login",
+            "description": "Login with **admin** credentials. Saves both **auth_token** and **admin_token**.\n\nStatus codes: 200, 422"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": "{{base_url}}/api/logout",
+            "description": "Revoke current access token.\n\nStatus codes: 200, 401"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "POST", "url": "{{base_url}}/api/logout" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Logout successful.\",\n  \"data\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": "{{base_url}}/api/profile",
+            "description": "Current user profile.\n\nStatus codes: 200, 401"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "GET", "url": "{{base_url}}/api/profile" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Profile fetched successfully.\",\n  \"data\": {\n    \"id\": 2,\n    \"name\": \"Student User\",\n    \"email\": \"student@example.com\",\n    \"role\": \"user\",\n    \"status\": \"active\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "description": "Public to authenticated users.",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": "{{base_url}}/api/categories",
+            "description": "List active categories.\n\nStatus codes: 200, 401"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": { "method": "GET", "url": "{{base_url}}/api/categories" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Categories fetched successfully.\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"name\": \"Electronics\",\n      \"slug\": \"electronics\",\n      \"description\": \"Electronic products\",\n      \"status\": \"active\",\n      \"created_at\": \"2026-03-19T08:00:00.000000Z\"\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "description": "Product CRUD, filter, search.",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": "{{base_url}}/api/products",
+            "description": "Paginated list for current user.\n\nStatus codes: 200, 401"
+          }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Apple AirPods Pro\",\n  \"description\": \"Wireless noise cancelling earbuds\",\n  \"brand\": \"Apple\",\n  \"sku\": \"AIRPODS-PRO-001\",\n  \"price\": 249.00,\n  \"stock\": 20,\n  \"image\": \"https://example.com/airpods.jpg\",\n  \"status\": \"active\",\n  \"trigger_prediction\": true,\n  \"prediction_mode\": \"sync\"\n}"
+            },
+            "url": "{{base_url}}/api/products",
+            "description": "Create product; optional AI prediction.\n\nStatus codes: 201, 401, 422"
+          },
+          "response": [
+            {
+              "name": "422 Validation Failed",
+              "originalRequest": { "method": "POST", "url": "{{base_url}}/api/products" },
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed.\",\n  \"errors\": {\n    \"title\": [\n      \"The title field is required.\"\n    ]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": "{{base_url}}/api/products/{{product_id}}",
+            "description": "Single product.\n\nStatus codes: 200, 401, 403, 404"
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Apple AirPods Pro 2\",\n  \"price\": 259.00,\n  \"stock\": 18,\n  \"status\": \"active\"\n}"
+            },
+            "url": "{{base_url}}/api/products/{{product_id}}",
+            "description": "Update product.\n\nStatus codes: 200, 401, 403, 404, 422"
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": "{{base_url}}/api/products/{{product_id}}",
+            "description": "Delete product.\n\nStatus codes: 200, 401, 403, 404"
+          }
+        },
+        {
+          "name": "Filter Products by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": "{{base_url}}/api/products?category_id={{category_id}}",
+            "description": "Query filter `category_id`.\n\nStatus codes: 200, 401, 422"
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": "{{base_url}}/api/products?search=airpods",
+            "description": "Search by title.\n\nStatus codes: 200, 401, 422"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Prediction",
+      "description": "Laravel calls FastAPI on the server. Product / prediction payloads may include `prediction_source` from ML: **model**, **keyword_fallback**, or **gemini_fallback** (see stored `prediction_logs`).",
+      "item": [
+        {
+          "name": "Predict Category for Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+            ],
+            "url": "{{base_url}}/api/products/{{product_id}}/predict",
+            "description": "Run prediction for existing product.\n\nStatus codes: 200, 401, 403, 404, 503"
+          },
+          "response": [
+            {
+              "name": "503 Service Unavailable",
+              "originalRequest": { "method": "POST", "url": "{{base_url}}/api/products/{{product_id}}/predict" },
+              "status": "Service Unavailable",
+              "code": 503,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"message\": \"Prediction service unavailable. Please try again later.\",\n  \"errors\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "description": "Requires **admin** role. Use **Login (Admin)** first or ensure **admin_token** is set.",
+      "item": [
+        {
+          "name": "Get All Predictions",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "url": "{{base_url}}/api/admin/predictions",
+            "description": "AI-classified products for review.\n\nStatus codes: 200, 401, 403"
+          }
+        },
+        {
+          "name": "Approve Prediction",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{base_url}}/api/admin/predictions/{{product_id}}/approve",
+            "description": "Approve predicted category.\n\nStatus codes: 200, 401, 403, 422"
+          }
+        },
+        {
+          "name": "Correct Prediction",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"final_category_id\": {{category_id}}\n}"
+            },
+            "url": "{{base_url}}/api/admin/predictions/{{product_id}}/correct",
+            "description": "Set final category manually.\n\nStatus codes: 200, 401, 403, 422"
+          },
+          "response": [
+            {
+              "name": "422 Validation Failed",
+              "originalRequest": { "method": "POST", "url": "{{base_url}}/api/admin/predictions/{{product_id}}/correct" },
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed.\",\n  \"errors\": {\n    \"final_category_id\": [\n      \"The selected final category id is invalid.\"\n    ]\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Feedback & Retry",
+      "description": "Admin-only feedback export retry endpoints (`routes/api.php`).",
+      "item": [
+        {
+          "name": "Retry Feedback Export (single log)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{base_url}}/api/admin/predictions/{{prediction_log_id}}/retry-feedback-export",
+            "description": "Retry FastAPI `/feedback` for one **prediction_log** id.\n\nStatus codes: 200, 401, 403, 422"
+          }
+        },
+        {
+          "name": "Retry Failed Feedback Exports (batch)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{base_url}}/api/admin/predictions/retry-failed-feedback-exports",
+            "description": "Retry all logs with `feedback_export_failed`.\n\nStatus codes: 200, 401, 403"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Web (public)",
+      "description": "No auth. HTML landing page and Laravel built-in health (not the FastAPI service).",
+      "item": [
+        {
+          "name": "Landing page",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "text/html,application/json" }],
+            "url": "{{base_url}}/",
+            "description": "Public marketing / project landing (`routes/web.php`). Returns HTML.\n\nStatus codes: 200"
+          }
+        },
+        {
+          "name": "Laravel health (/up)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/up",
+            "description": "Laravel framework health endpoint.\n\nStatus codes: 200"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ML Debug (internal only)",
+      "description": "Calls **FastAPI** at `{{ml_base_url}}`. `127.0.0.1:8001` is only reachable **on the VPS** or via SSH tunnel:\n\n`ssh -L 8001:127.0.0.1:8001 user@autocategoryai.online`\n\n**Security:** keep FastAPI on localhost in production; do not expose `/debug/*` publicly.\n\n**Predict** uses ML first; may escalate to keywords or Gemini (`prediction_source` in JSON).",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{ml_base_url}}/health",
+            "description": "FastAPI readiness. JSON includes `status`, `model_dir`, thresholds, `gemini_enabled`, `gemini_force_verify`, `artifact_status`."
+          }
+        },
+        {
+          "name": "Predict (direct to ML)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Wireless earbuds\",\n  \"description\": \"Bluetooth in-ear headphones with charging case\",\n  \"brand\": \"ExampleBrand\"\n}"
+            },
+            "url": "{{ml_base_url}}/predict",
+            "description": "Full ML pipeline (internal / tunnel). Response includes `prediction_source`: **model** | **keyword_fallback** | **gemini_fallback**, plus `message`, `top_candidates`, `suggested_new_category` (when very low confidence), etc."
+          }
+        },
+        {
+          "name": "Predict — edge case (variables)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{ml_predict_title}}\",\n  \"description\": \"{{ml_predict_description}}\",\n  \"brand\": \"{{ml_predict_brand}}\"\n}"
+            },
+            "url": "{{ml_base_url}}/predict",
+            "description": "Same as **Predict (direct)** but uses env vars — e.g. bra/charger/shelf text to exercise Gemini escalation when `GEMINI_ENABLED=true`."
+          }
+        },
+        {
+          "name": "Gemini Fallback Check",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{gemini_test_title}}\",\n  \"description\": \"{{gemini_test_description}}\",\n  \"brand\": \"{{gemini_test_brand}}\"\n}"
+            },
+            "url": "{{ml_base_url}}/debug/gemini-fallback-check",
+            "description": "Debug endpoint for Gemini fallback path.\n\nStatus codes: 200"
+          },
+          "response": [
+            {
+              "name": "200 Success",
+              "originalRequest": { "method": "POST", "url": "{{ml_base_url}}/debug/gemini-fallback-check" },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"gemini_enabled\": true,\n  \"fallback_tested\": true,\n  \"prediction_source\": \"gemini_fallback\",\n  \"predicted_category\": \"Fashion\",\n  \"suggested_new_category\": \"Women Innerwear > Bra\",\n  \"confidence\": 0.95,\n  \"review_needed\": false,\n  \"reason\": \"Example\",\n  \"raw_response_available\": true,\n  \"message\": \"Gemini fallback check completed successfully.\",\n  \"error\": null\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

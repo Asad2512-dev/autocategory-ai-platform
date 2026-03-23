@@ -1,0 +1,5 @@
+# Optional: semester notebook and plots (install in same venv or separate)
+jupyter>=1.0.0
+ipykernel>=6.29.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
